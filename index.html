@@ -827,6 +827,30 @@ const TRAINER_HOURS_MONTHLY = [
 const TOTAL_TRAINING_HOURS = 784.63;
 const TOTAL_TRAINING_SESSIONS = 411;
 
+/* ---------- Trainer Hours ---------- */
+
+const TRAINER_HOURS = [
+  {trainer:"Mohd. Saif Rafi Ansari", apr:39.10, may:34.60, jun:48.05, total:121.75, sessions:80},
+  {trainer:"Jyoti Verma", apr:30.50, may:25.00, jun:26.75, total:82.25, sessions:30},
+  {trainer:"Vipin Kumar", apr:4.50, may:20.50, jun:56.00, total:81.00, sessions:43},
+  {trainer:"Arsh Elahi", apr:33.38, may:14.25, jun:31.25, total:78.88, sessions:85},
+  {trainer:"Rithtika Das", apr:0, may:27.07, jun:43.00, total:70.07, sessions:25},
+  {trainer:"Dilip Nair", apr:0, may:49.00, jun:0, total:49.00, sessions:1},
+  {trainer:"Arpita Das Gupta", apr:0, may:9.00, jun:7.00, total:16.00, sessions:8},
+  {trainer:"Ankit Sharma", apr:0, may:0, jun:1.00, total:1.00, sessions:1},
+  {trainer:"Ganesh Chandra Badhani", apr:1.00, may:0, jun:0, total:1.00, sessions:1},
+  {trainer:"Nakul Kashyap", apr:1.00, may:0, jun:0, total:1.00, sessions:1}
+];
+
+const TRAINER_HOURS_MONTHLY = [
+  {month:"April 2026", hours:228.77, sessions:127},
+  {month:"May 2026", hours:298.81, sessions:147},
+  {month:"June 2026", hours:257.05, sessions:137}
+];
+
+const TRAINER_HOURS_TOTAL = 784.63;
+const TRAINER_SESSIONS_TOTAL = 411;  
+  
 const PREPOST = [
   {trainer:"Saif",  pre:7.45, post:8.51, delta:1.06},
   {trainer:"Arsh",  pre:8.22, post:9.12, delta:0.90},
@@ -1039,7 +1063,284 @@ document.querySelectorAll('#deptTable thead th').forEach(th=>{
 });
 document.getElementById('deptSearch').addEventListener('input', renderDeptTable);
 renderDeptTable();
+/* ---------- Monthly Training Hours ---------- */
 
+new Chart(document.getElementById('trainerHoursMonthlyChart'), {
+
+  type: 'bar',
+
+  data: {
+    labels: TRAINER_HOURS_MONTHLY.map(x => x.month),
+
+    datasets: [
+      {
+        label: 'Training Hours',
+
+        data: TRAINER_HOURS_MONTHLY.map(x => x.hours),
+
+        backgroundColor: 'rgba(205,166,73,0.35)',
+
+        borderColor: GOLD,
+
+        borderWidth: 1.5,
+
+        borderRadius: 6,
+
+        maxBarThickness: 75
+      },
+      {
+        type: 'line',
+
+        label: 'Trend',
+
+        data: TRAINER_HOURS_MONTHLY.map(x => x.hours),
+
+        borderColor: GOLD_SOFT,
+
+        borderWidth: 2,
+
+        tension: 0.35,
+
+        pointBackgroundColor: GOLD_SOFT,
+
+        pointRadius: 4,
+
+        fill: false
+      }
+    ]
+  },
+
+  options: {
+
+    responsive: true,
+
+    maintainAspectRatio: false,
+
+    interaction: {
+      intersect: false,
+      mode: 'index'
+    },
+
+    plugins: {
+
+      legend: {
+        display: false
+      },
+
+      tooltip: {
+
+        backgroundColor: '#0d1522',
+
+        borderColor: '#22334a',
+
+        borderWidth: 1,
+
+        padding: 10,
+
+        callbacks: {
+
+          label: function(ctx) {
+            return ' ' + ctx.parsed.y.toFixed(2) + ' hours';
+          }
+
+        }
+
+      }
+
+    },
+
+    scales: {
+
+      x: {
+        grid: {
+          display: false
+        },
+
+        ticks: {
+          font: {
+            family: "'IBM Plex Mono', monospace",
+            size: 11
+          }
+        }
+      },
+
+      y: {
+
+        beginAtZero: true,
+
+        grid: baseGrid(),
+
+        title: {
+          display: true,
+          text: 'Training Hours'
+        },
+
+        ticks: {
+          font: {
+            family: "'IBM Plex Mono', monospace",
+            size: 11
+          }
+        }
+
+      }
+
+    }
+
+  }
+
+});
+/* ---------- Training Hours by Trainer ---------- */
+
+const trainerHoursSorted = [...TRAINER_HOURS]
+  .sort((a, b) => b.total - a.total);
+
+new Chart(document.getElementById('trainerHoursRankingChart'), {
+
+  type: 'bar',
+
+  data: {
+
+    labels: trainerHoursSorted.map(t => t.trainer),
+
+    datasets: [
+      {
+        label: 'Total Training Hours',
+
+        data: trainerHoursSorted.map(t => t.total),
+
+        backgroundColor: GOLD,
+
+        borderRadius: 5,
+
+        maxBarThickness: 30
+      }
+    ]
+
+  },
+
+  options: {
+
+    indexAxis: 'y',
+
+    responsive: true,
+
+    maintainAspectRatio: false,
+
+    plugins: {
+
+      legend: {
+        display: false
+      },
+
+      tooltip: {
+
+        backgroundColor: '#0d1522',
+
+        borderColor: '#22334a',
+
+        borderWidth: 1,
+
+        padding: 10,
+
+        callbacks: {
+
+          label: function(ctx) {
+
+            const trainer =
+              trainerHoursSorted[ctx.dataIndex];
+
+            return [
+              ' ' + trainer.total.toFixed(2) + ' hours',
+              ' ' + trainer.sessions + ' sessions',
+              ' ' +
+              (trainer.total / trainer.sessions).toFixed(2) +
+              ' hrs/session'
+            ];
+
+          }
+
+        }
+
+      }
+
+    },
+
+    scales: {
+
+      x: {
+
+        beginAtZero: true,
+
+        grid: baseGrid(),
+
+        title: {
+          display: true,
+          text: 'Training Hours'
+        },
+
+        ticks: {
+          font: {
+            family: "'IBM Plex Mono', monospace",
+            size: 10
+          }
+        }
+
+      },
+
+      y: {
+
+        grid: {
+          display: false
+        },
+
+        ticks: {
+          font: {
+            size: 10.5
+          }
+        }
+
+      }
+
+    }
+
+  }
+
+});
+ /* ---------- Trainer Hours Table ---------- */
+
+const trainerHoursTableBody =
+  document.getElementById('trainerHoursTableBody');
+
+trainerHoursTableBody.innerHTML =
+  trainerHoursSorted.map(t => {
+
+    const avg =
+      t.sessions > 0
+        ? t.total / t.sessions
+        : 0;
+
+    return `
+      <tr>
+
+        <td>${t.trainer}</td>
+
+        <td>${t.apr.toFixed(2)}</td>
+
+        <td>${t.may.toFixed(2)}</td>
+
+        <td>${t.jun.toFixed(2)}</td>
+
+        <td>${t.total.toFixed(2)}</td>
+
+        <td>${t.sessions}</td>
+
+        <td>${avg.toFixed(2)}</td>
+
+      </tr>
+    `;
+
+  }).join(''); 
+  
 /* ---------- Pre/Post ---------- */
 new Chart(document.getElementById('prepostChart'), {
   type:'bar',
